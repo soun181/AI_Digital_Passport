@@ -1,0 +1,193 @@
+# Revocation, automation activation and proof
+
+## Latest operator update — 29 October 2026
+
+The operator subsequently confirmed completion of both hosted automatic worker
+activation and live revoked Devnet fixture validation, in addition to the earlier
+same-ID Devnet program upgrade and Vercel feature enablement. Earlier pending labels
+in this document describe the prior independently evidenced checkpoint; they are
+superseded by this operator-reported completion status.
+
+No worker host identifier/logs, revoked verification code/PDF/hash, finality
+signature or strict CI run reference accompanied this confirmation. These outcomes
+have not been independently rerun in this documentation update. Attach the actual
+artifacts and reconcile the committed fixture manifest before claiming reproducible
+live CI coverage. Do not infer that the manifest or CI configuration changed solely
+from this status update. Demo capture remains unconfirmed. Devnet/test-issuer scope
+and preservation of historical issuance evidence remain unchanged.
+
+
+## Deployment checkpoint — 29 October 2026
+
+PR #11 merged as `b252dcc`; Vercel production deployed the revocation-aware API,
+verifier and UI. Supabase MCP applied `20261029160749
+orionx_passport_version_revocation_0005` and `20261029160924
+orionx_revocation_function_privileges_0006`. Existing passport/version/award records
+were unchanged; new tables have backend-only RLS and browser roles cannot execute
+the immutable trigger function. Production health, protected-route, authentic-PDF
+and tampered-PDF smoke checks passed.
+
+The operator reported the same-ID Devnet revocation upgrade and Vercel production
+`REVOCATION_ENABLED=true` redeployment complete on 29 October 2026. The update
+did not include a transaction signature, deployed binary hash or fresh acceptance
+artifact; this checkpoint records operator confirmation, not independent revalidation.
+Dedicated live revoked fixture, persistent worker hosting and live unattended Sheets
+acceptance remain pending. Before merge, 158 application/runtime
+tests, 3 Rust tests, typecheck, build and all three CI workflows passed.
+
+## What this change does
+
+A finalized `VersionRecord` remains immutable. A separate Anchor `RevocationRecord`
+PDA (`["revocation", version_record_pubkey]`) invalidates exactly one version. Only
+`IssuerConfig.current_authority` or `IssuerConfig.admin` can create it. Creation is
+one-way: no close, edit, reinstate or hash rewrite instruction is provided. Existing
+issuer, epoch, registry and version account sizes and addresses are unchanged.
+Revocation remains available while issuance is paused. The issuer's public key is
+not proof of official university approval; this deployment remains a test issuer.
+
+Private administrative reasons and actor identifiers stay in PostgreSQL. The chain
+stores salted, version-bound reason and actor commitments, signing authority, epoch,
+slot and time. Public/student responses do not disclose the private reason or actor.
+
+`Revocation` progresses PENDING -> REVOKED after finalized chain reconciliation, or
+PENDING -> FAILED on terminal/exhausted processing. The existing `Job` table handles
+REVOKE work with the existing claim/lease/fencing/backoff mechanisms. An immutable
+signed attempt commits before broadcast. Each claim checks finalized on-chain state
+before deciding to resend identical bytes or, only after expiry, sign a replacement.
+An observed transaction is not finality. After chain success and a server crash,
+the next claim adopts the finalized tombstone without sending a new transaction.
+An administrator can retry a failed immutable request using its original reason and
+withdrawal selection. Conflicting requests return 409.
+
+The latest-issued pointer always remains the highest finalized issuance number.
+Revoking it leaves **no current valid credential**. Older versions remain historical;
+they are not promoted. Verification reports registration, integrity, version currency
+and revocation separately. Byte-identical revoked PDFs are MATCH + REVOKED, not
+"tampered". Student and public credential downloads withhold revoked versions;
+authorized administrators retain archival access to the original bytes.
+
+For an incorrectly awarded skill, select the affected Record IDs in the revoke
+confirmation. An append-only `AwardWithdrawal` excludes those records from every
+future cumulative snapshot while preserving original awards and historical PDFs.
+Finish revocation, then explicitly choose **Issue correction** on the latest revoked
+version. This reserves the next version through the existing PDF/CHAIN/WRITEBACK
+pipeline. No remaining awards means no corrected credential. For a wrongly awarded
+skill appearing in several records, explicitly withdraw all affected records.
+
+## Validation commands
+
+```sh
+npm ci
+npm run db:generate
+npm run db:validate
+npm run typecheck
+npm test
+npm run build
+cargo test --locked
+```
+
+Read-only public-chain checks (no signing credentials, database, or OrionX API):
+
+```sh
+npm run test:verification:live -- --allow-pending-revoked-fixture
+npm run verify:independent -- --code D1-BA4V45SHOBSRMOBTFYDFU7M4LUFOELZR \
+  --pdf fixtures/verification/current.pdf \
+  --program 9q3EFytGCsR2hk5FnerXxMWomC2yCajpx78durY91JPa \
+  --issuer DoBPRwB5HkE6Hu3J6khzwdZhH6nSrrHmiuwx68wrdJWt
+```
+
+The committed PDFs are existing synthetic hackathon fixtures. Their SHA-256 values
+are pinned in `fixtures/verification/devnet.json`; authenticity is then independently
+checked against finalized Devnet accounts, issuer epochs and registry lineage.
+An unavailable RPC is an explicit failure. Devnet resets, outages, or subsequent
+issuance on the current fixture require investigation; do not convert them to passes.
+
+The normal read-only CI job reports live revoked cases as **NOT EXERCISED** while
+`revoked` is null in the manifest. It does not manufacture a public revocation.
+After approved activation, issue/revoke a separate synthetic fixture, commit its
+original PDF and exact proof context, and run `npm run test:verification:live` or the
+strict workflow_dispatch run. Strict mode fails if the revoked fixture is missing.
+Do not revoke the shared current fixture used by ordinary CI.
+
+The isolated workflow uses disposable PostgreSQL 16, an ephemeral local signing key,
+an isolated copy of the program with a local bootstrap key, pinned Agave v4.4.0 compiler, platform-tools v1.57 (SBPF v0) and Agave v2.3.13
+local validator runtime. It uses no production/Devnet key. Reproduce on a disposable local
+PostgreSQL instance, with Agave tools and Rust on PATH:
+
+```sh
+ORIONX_ISOLATED_TEST=1 \
+DATABASE_URL=postgresql://test:test@127.0.0.1:5432/test \
+npm run test:revocation:integration
+```
+
+It exercises unattended polling with the canonical **fixture adapter**, real PDF
+storage, real SBF issuance, unauthorized revocation, concurrent duplicate requests,
+chain unavailability, durable signed attempts, a chain-success/server-crash boundary,
+recovery, immutable historical evidence and correction without withdrawn awards.
+It does not establish live Google Sheets or hosted worker operation.
+
+## Approval-gated activation sequence
+
+Ordinary CI does not migrate production, upgrade its program, deploy a worker or
+perform live issuance/revocation. The separately authorized database migration and
+main deployment below are complete. The Devnet upgrade and Vercel enablement are
+now operator-reported complete; live synthetic operations and worker activation
+remain separate steps.
+
+1. Obtain deployment/operator approval. Run the isolated lifecycle CI to green and
+   review the additive program diff. Record the current program upgrade authority,
+   program binary, issuer configuration, and representative finalized account bytes.
+2. **Complete:** apply migrations `0005_revocation` and
+   `0006_revocation_function_privileges` through Supabase MCP (identifiers above).
+   Production tracks Supabase migration history and has no Prisma migration baseline;
+   do not run `prisma migrate deploy` against it without a separately reviewed baseline
+   plan. These additive changes preserve issuance records.
+3. **Reported complete by operator (Devnet only).** For reproduction, build the
+   **unmodified** production program with pinned tools:
+   `cargo-build-sbf --tools-version v1.57 --arch v0 --manifest-path programs/passport-registry/Cargo.toml`.
+   Have the existing upgrade authority upgrade the same pinned Devnet program ID.
+   Do not initialize a new issuer, rotate keys, replace the program ID, close accounts,
+   or redeploy the isolated test build. Compare representative account bytes afterward.
+4. **API/verifier/UI deployed; Vercel feature enablement reported complete.**
+   Verify existing historical/current PDFs independently and attach actual deployment
+   and upgrade evidence. Hosted worker activation is still pending.
+5. Set `REVOCATION_ENABLED=true` on the worker when it is activated (API enablement
+   is operator-reported complete). With authorization, exercise a
+   dedicated synthetic revocation and correction; confirm finalized PDA state using
+   the independent CLI. Populate the dedicated revoked CI fixture and pass strict CI.
+6. For unattended Sheets operation, provision an approved always-on container host
+   for the **existing** `Dockerfile.worker`. Place existing database/storage/signer/
+   Sheets configuration in a server-only `.env.worker` (never commit it). Set
+   `SOURCE_MODE=sheets`, `SYNC_ENABLED=true`, `SYNC_POLL_MS=60000`,
+   `STORAGE_MODE=supabase`, `CHAIN_MODE=devnet`, pinned program/genesis and the existing
+   issuer credential. Start with:
+   `docker compose -f compose.worker.yml --profile automation up -d --build`.
+   No new queue, database, auth provider or storage service is introduced.
+7. In the approved synthetic Sheet copy, add one confirmed award. Observe automatic
+   import -> durable job -> stored PDF -> finalized chain record -> Sheets readback ->
+   student access. Repeat the source poll, reorder the row, and restart the worker;
+   verify one version and one effective issuance. Record actual timestamps/signatures.
+   This is the remaining live Sheets acceptance check, not established by fixture CI.
+
+To stop new automation, stop the worker or disable polling; persisted jobs remain.
+To stop new revocations, set `REVOCATION_ENABLED=false`. **Never roll the public
+verifier back to a version that ignores revocation after the first on-chain revoke.**
+A code rollback cannot reinstate a revoked credential; correction requires new issuance.
+Manual administrator processing remains available through the existing fallback.
+
+## Demo capture (four clips, 95 seconds total)
+
+Use only the approved synthetic Sheet and test issuer. Capture real finality; trim
+idle recording time with an explicit elapsed-time note rather than claiming instant
+confirmation. Preflight network availability before recording.
+
+| Clip | Time | Capture and independently check |
+| --- | --- | --- |
+| A: automatic issuance | 30 s | Add a confirmed synthetic skill, hands off admin controls, show worker log + finalized Explorer transaction + new student PDF + public code result. |
+| B: tamper detection | 15 s | Run the independent CLI on original bytes, copy the PDF and flip one byte, rerun and show MISMATCH. |
+| C: revocation | 30 s | Show valid version, select Revoke and reason, show PENDING then finalized revocation PDA, rerun independent CLI on the unchanged PDF: MATCH + REVOKED. |
+| D: recovery | 20 s | Use the isolated lifecycle run's persisted signed attempt, interrupt after chain finality before SQL completion, restart and show one attempt + completed reconciliation. |
+
+Map these clips to existing presentation sections. Do not claim C is recorded on
+Devnet until the dedicated fixture is approved and exercised against the upgraded program. The
+isolated test output is labeled local and must not be represented as hosted proof.
