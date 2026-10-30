@@ -1,0 +1,158 @@
+.page { position: relative; isolation: isolate; }
+.hero { display: grid; grid-template-columns: .92fr 1.08fr; align-items: center; gap: clamp(36px, 5vw, 72px); padding: 58px 0 60px; }
+.copy { padding-bottom: 20px; }
+.eyebrow { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 28px; color: var(--primary); font-size: 13px; font-weight: 650; }
+.eyebrowMark { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 9px; background: var(--primary-soft); }
+.eyebrow > svg { transition: transform 180ms; }
+.eyebrow:hover > svg { transform: translateX(4px); }
+.copy h1 { margin: 0 0 36px; font-size: clamp(56px, 5.75vw, 80px); line-height: 1.055; letter-spacing: -.065em; font-weight: 650; }
+.copy > p { max-width: 36ch; font-size: 17px; line-height: 1.8; color: var(--muted); margin: 0 0 36px; }
+.actions { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+.primary { padding: 13px 20px; border-radius: 999px; min-height: 48px; font-size: 13px; box-shadow: 0 5px 12px #635bff22, inset 0 1px 0 #ffffff30; transition: transform 200ms, box-shadow 200ms, background 200ms; }
+.primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px #635bff33; }
+.primary > svg, .verify > svg { transition: transform 200ms; }
+.primary:hover > svg, .verify:hover > svg { transform: translateX(3px); }
+.verify { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 650; min-height: 44px; }
+.verify:hover { color: var(--primary); }
+.foundation { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 30px; padding: 30px 0; }
+.university { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+.btu { font-weight: 800; letter-spacing: -.08em; font-size: 28px; }
+.university > span:last-child { font-size: 10px; line-height: 1.6; color: var(--muted); }
+.university strong { font-weight: 600; color: var(--ink); }
+.principles { display: flex; flex-wrap: wrap; gap: 22px; }
+.principles > span { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); }
+.principles svg { color: var(--primary); stroke-width: 1.5; }
+.explore { display: grid; place-items: center; flex: 0 0 40px; height: 40px; border: 1px solid var(--line); border-radius: 50%; color: var(--muted); transition: background 180ms, transform 180ms; }
+.explore:hover { background: var(--primary-soft); transform: translateY(2px); }
+@media (min-width: 768px) {
+  .hero { align-items: start; grid-template-columns: minmax(0, .98fr) minmax(0, 1.02fr); gap: clamp(32px, 4vw, 64px); padding: 32px 0 44px; }
+  .copy { align-self: start; padding: 12px 0 0; }
+  .copy h1 { font-size: clamp(50px, 5.35vw, 76px); }
+  .copy > p { font-size: 16px; line-height: 1.75; margin-bottom: 36px; }
+  .eyebrow { margin-bottom: 28px; line-height: 28px; }
+  .actions { gap: 14px; }
+}
+@media (min-width: 768px) and (max-width: 1100px) {
+  .copy h1 { font-size: clamp(46px, 5.2vw, 58px); }
+  .actions { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 8px; }
+  .actions .primary, .actions .verify { min-width: 0; padding: 10px 6px; font-size: 11px; gap: 5px; justify-content: center; white-space: nowrap; }
+  .actions svg { width: 14px; height: 14px; }
+}
+@media (min-width: 1440px) { .hero { padding-top: 40px; padding-bottom: 52px; } }
+@media (max-width: 1100px) {
+  .hero { gap: 32px; }
+  .actions { gap: 10px 18px; }
+  .foundation { gap: 20px; }
+  .principles { gap: 12px; }
+  .explore { display: none; }
+}
+@media (max-width: 767px) {
+  .hero { grid-template-columns: minmax(0, 1fr); gap: 36px; padding: 40px 0 34px; }
+  .copy { padding: 0; }
+  .copy h1 { font-size: clamp(53px, 10vw, 70px); max-width: 600px; margin-bottom: 30px; }
+  .desktopBreak { display: none; }
+  .copy > p { max-width: 44ch; font-size: 16px; margin-bottom: 32px; }
+  .eyebrow { margin-bottom: 28px; font-size: 12px; }
+  .actions { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 8px; width: 100%; max-width: 430px; }
+  .actions .primary, .actions .verify { min-width: 0; min-height: 46px; padding: 10px 8px; gap: 6px; justify-content: center; font-size: clamp(10px, 2.9vw, 12px); white-space: nowrap; }
+  .actions .verify { border: 1px solid var(--line-strong); border-radius: 999px; }
+  .actions .primary svg, .actions .verify svg { width: 14px; height: 14px; }
+
+  .foundation { flex-direction: column; align-items: flex-start; padding: 25px 0; gap: 22px; }
+  .principles { gap: 14px 22px; }
+  .principles > span { font-size: 11px; }
+  .university > span:last-child { font-size: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page *, .page *::before, .page *::after { transition: none !important; animation: none !important; }
+}
+
+
+/* A second, intentional typographic scale for Mkhedruli/Mtavruli:
+   Georgian words are wider than the English headline's display metrics. */
+:global(html[lang="ka"]) .copy { min-width: 0; }
+:global(html[lang="ka"]) .copy h1 {
+  max-width: 100%;
+  font-family: var(--font-georgian), var(--font-display), sans-serif;
+  font-size: clamp(35px, 4.4vw, 66px);
+  font-weight: 700;
+  line-height: 1.22;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  margin-bottom: 26px;
+}
+:global(html[lang="ka"]) .copy > p {
+  max-width: 49ch;
+  line-height: 1.65;
+}
+:global(html[lang="ka"]) .eyebrow {
+  min-width: 0;
+  max-width: 100%;
+  font-weight: 650;
+  line-height: 1.5;
+  white-space: normal;
+}
+:global(html[lang="ka"]) .actions {
+  min-width: 0;
+  max-width: 100%;
+}
+:global(html[lang="ka"]) .actions .primary,
+:global(html[lang="ka"]) .actions .verify {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  line-height: 1.35;
+  text-align: center;
+  overflow-wrap: break-word;
+}
+:global(html[lang="ka"]) .actions svg { flex: 0 0 auto; }
+@media (min-width: 768px) and (max-width: 1100px) {
+  :global(html[lang="ka"]) .actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  :global(html[lang="ka"]) .actions .primary,
+  :global(html[lang="ka"]) .actions .verify {
+    font-size: 12px;
+    padding: 12px 14px;
+    min-height: 46px;
+  }
+}
+@media (max-width: 767px) {
+  :global(html[lang="ka"]) .hero { min-width: 0; }
+  :global(html[lang="ka"]) .copy h1 {
+    font-size: clamp(30px, 8.1vw, 41px);
+    line-height: 1.24;
+    margin-bottom: 24px;
+  }
+  :global(html[lang="ka"]) .copy > p {
+    font-size: 15px;
+    line-height: 1.72;
+    margin-bottom: 26px;
+  }
+  :global(html[lang="ka"]) .eyebrow { font-size: 12px; margin-bottom: 24px; }
+  :global(html[lang="ka"]) .actions {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 420px;
+  }
+  :global(html[lang="ka"]) .actions .primary,
+  :global(html[lang="ka"]) .actions .verify {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+}
+@media (max-width: 360px) {
+  .actions { grid-template-columns: minmax(0, 1fr); }
+  .actions .primary,
+  .actions .verify {
+    white-space: normal;
+    padding-inline: 14px;
+    width: 100%;
+  }
+}

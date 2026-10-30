@@ -1,0 +1,62 @@
+{
+  "name": "orionx",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @orionx/web",
+    "build": "npm run build -w @orionx/web",
+    "prepare:api-resources": "node scripts/prepare-api-resources.mjs",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "dev:services": "node scripts/with-env.mjs --mode development vercel dev --local",
+    "dev:web": "npm run dev -w @orionx/web",
+    "dev:api": "npm run dev -w @orionx/api",
+    "dev:worker": "npm run dev -w @orionx/worker",
+    "db:generate": "npm run generate -w @orionx/db",
+    "db:validate": "npm run validate -w @orionx/db",
+    "db:push": "npm run push -w @orionx/db",
+    "test": "npm run test:config && npm run test:runtime && npm run test --workspaces --if-present",
+    "test:runtime": "node --test scripts/runtime.test.cjs",
+    "env:pull": "vercel env pull .env.local --environment=development --yes",
+    "env:check": "node scripts/with-env.mjs tsx scripts/check-env.ts",
+    "check:readiness": "node scripts/with-env.mjs tsx scripts/check-readiness.ts",
+    "test:live": "node scripts/with-env.mjs tsx scripts/check-live.ts",
+    "test:manual": "node scripts/with-env.mjs tsx scripts/test-manual.ts",
+    "test:config": "node --test scripts/env.test.mjs",
+    "env:sync": "node scripts/sync-vercel-env.mjs",
+    "sync": "node scripts/with-env.mjs tsx scripts/sync.ts",
+    "seed:demo-auth": "node scripts/with-env.mjs tsx scripts/seed-demo-auth.ts",
+    "test:chain": "tsx scripts/test-chain.ts",
+    "test:ledger": "node scripts/with-env.mjs tsx scripts/check-ledger.ts",
+    "test:api": "node scripts/with-env.mjs tsx scripts/check-api.ts",
+    "test:capacity": "node scripts/with-env.mjs tsx scripts/test-capacity.ts",
+    "test:pipeline": "node scripts/with-env.mjs tsx scripts/test-pipeline.ts",
+    "test:pipeline:devnet": "node scripts/with-env.mjs tsx scripts/test-pipeline.ts --devnet",
+    "deploy:devnet": "node scripts/with-env.mjs tsx scripts/deploy-devnet.ts",
+    "issuer:admin": "node scripts/with-env.mjs tsx scripts/issuer-admin.ts",
+    "preview:pdf": "tsx scripts/preview-pdf.ts",
+    "verify:independent": "node --import tsx scripts/verify-independent.ts",
+    "test:verification:live": "node --import tsx scripts/test-verification-live.ts",
+    "test:revocation:integration": "node --import tsx scripts/test-revocation-integration.ts"
+  },
+  "devDependencies": {
+    "esbuild": "0.27.0",
+    "typescript": "^5.7.3",
+    "vercel": "65.2.0",
+    "@types/node": "22.20.5"
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "overrides": {
+    "multer": "2.5.0",
+    "postcss": "8.5.31",
+    "deepmerge-ts": "8.0.0",
+    "path-to-regexp@>=8.0.0 <9.0.0": "8.4.2",
+    "rpc-websockets": {
+      "uuid": "11.1.0"
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "api": {
+      "root": "apps/api",
+      "framework": "nestjs",
+      "entrypoint": "src/server.ts",
+      "functions": {
+        "src/server.ts": {
+          "maxDuration": 60,
+          "includeFiles": "runtime-resources/**"
+        }
+      },
+      "installCommand": "cd ../.. && npm ci",
+      "buildCommand": "npm run prepare:api-resources --prefix ../.. && npm run db:generate --prefix ../.. && npm run typecheck"
+    },
+    "web": {
+      "root": "apps/web",
+      "framework": "nextjs",
+      "installCommand": "cd ../.. && npm ci",
+      "buildCommand": "npm run db:generate --prefix ../.. && npm run build",
+      "devCommand": "npm run dev -- --hostname 127.0.0.1"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api",
+      "destination": {
+        "service": "api"
+      }
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": {
+        "service": "api"
+      }
+    },
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "web"
+      }
+    }
+  ]
+}
